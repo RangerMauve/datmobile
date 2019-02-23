@@ -25,3 +25,24 @@ if (typeof localStorage !== 'undefined') {
 // If using the crypto shim, uncomment the following line to ensure
 // crypto is loaded first, so it can populate global.crypto
 require('crypto')
+
+// These math / unit8array things are needed for the crypto stuff in hypercore
+if (!Uint8Array.prototype.fill) {
+  Uint8Array.prototype.fill = function (x) {
+    for(let i = 0; i < this.length; i++) this[i] = x
+    return this
+  };
+}
+
+if (!Math.clz32) Math.clz32 = (function(log, LN2){
+  return function(x) {
+    // Let n be ToUint32(x).
+    // Let p be the number of leading zero bits in
+    // the 32-bit binary representation of n.
+    // Return p.
+    if (x == null || x === 0) {
+      return 32;
+    }
+    return 31 - log(x >>> 0) / LN2 | 0; // the "| 0" acts like math.floor
+  };
+})(Math.log, Math.LN2);

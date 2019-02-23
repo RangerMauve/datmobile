@@ -3,6 +3,7 @@ import ram from 'random-access-memory'
 import websocket from 'websocket-stream'
 import encoding from 'dat-encoding'
 import crypto from 'hypercore-crypto'
+import pump from 'pump'
 
 const DEFAULT_WEBSOCKET_RECONNECT = 1000
 const DAT_PROTOCOL = 'dat://'
@@ -25,12 +26,16 @@ export default class Repo extends Hyperdrive {
 
     const db = (file) => {
       const db = finalOpts.db || ram
-      return db(this.url.slice(DAT_PROTOCOL.length) + '/' + file)
+      return db(key.toString('hex') + '/' + file)
     }
 
     super(db, key, finalOpts)
 
-    this._createWebsocket()
+    this.opts = finalOpts
+
+    this.ready(() => {
+      this._createWebsocket()
+    })
   }
 
   _createWebsocket () {
@@ -41,28 +46,36 @@ export default class Repo extends Hyperdrive {
 
     const server = chooseRandom(servers)
 
-    const url = server + '/' + this.archive.key.toString('hex')
+    const url = server + '/' + this.key.toString('hex')
 
     this.websocket = websocket(url)
 
-    this.websocket.once('error', () => {
+    this.websocket.once('error', (e) => {
+      console.error(e)
       setTimeout(() => {
         this._createWebsocket(server)
       }, DEFAULT_WEBSOCKET_RECONNECT)
     })
 
+    this.websocket.once('close', () => console.log('closed websocket'))
+
     this._replicate(this.websocket)
   }
 
-  close (cb) {
-    super.close(() => {
-      if (this.websocket) {
-        this.websocket.end()
-        this.websocket = null
-      }
+  _replicate (stream) {
+    pump(stream, this.replicate({
+      sparse: true,
+      live: true
+    }), stream)
+  }
 
-      if (cb) cb()
-    })
+  close (cb) {
+    if (this.websocket) {
+      this.websocket.end()
+      this.websocket = null
+    }
+
+    super.close(cb)
   }
 
   destroy (cb) {
