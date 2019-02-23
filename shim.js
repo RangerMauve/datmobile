@@ -1,4 +1,4 @@
-require('es6-symbol/implement');
+require('es6-symbol/implement')
 if (typeof __dirname === 'undefined') global.__dirname = '/'
 if (typeof __filename === 'undefined') global.__filename = ''
 if (typeof process === 'undefined') {

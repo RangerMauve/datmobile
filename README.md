@@ -6,8 +6,7 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 
 - [x] Set up RN project (Start with Android for now)
 - [ ] Get hyperdrive running in RN
-	- [ ] Get node builtin modules working
-		- [ ] Base off of [browserify]
+	- [x] Get node builtin modules working [rn-nodeify](https://github.com/tradle/rn-nodeify)
 - [ ] Get hyperdrive replicating with dat-gateway through websockets
 - [ ] Make a viewer similar to [dat-js-example](https://github.com/RangerMauve/dat-js-example)
 	- [ ] Load Dat from URL bar
