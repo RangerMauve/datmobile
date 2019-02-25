@@ -26,12 +26,8 @@ if (typeof localStorage !== 'undefined') {
 // crypto is loaded first, so it can populate global.crypto
 require('crypto')
 
-// These math / unit8array things are needed for the crypto stuff in hypercore
 if (!Uint8Array.prototype.fill) {
-  Uint8Array.prototype.fill = function (x) {
-    for(let i = 0; i < this.length; i++) this[i] = x
-    return this
-  };
+  Uint8Array.prototype.fill = Array.prototype.fill;
 }
 
 if (!Math.clz32) Math.clz32 = (function(log, LN2){

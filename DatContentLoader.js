@@ -1,5 +1,6 @@
 import Dat from './react-native-dat'
 import DatURL from './DatURL'
+import delay from 'delay'
 
 export default class DatContentLoader {
   constructor (gateway) {
@@ -57,11 +58,20 @@ export default class DatContentLoader {
 
   async getDat (url) {
     if (!this.dats.has(url)) {
-      this.dats.set(url, new Dat(url, {
+      const archive = new Dat(url, {
         gateway: this.gateway
-      }))
+      })
+      console.log(`Getting Archive: ${url}`)
+      this.dats.set(url, archive)
+      console.log('Waiting for ready')
       await new Promise((resolve, reject) => {
-        this.dats.get(url).metadata.update((err) => {
+        archive.ready((err) => {
+          if(err) reject(err)
+          else resolve(null)
+        })
+      })
+      await new Promise((resolve, reject) => {
+        archive.metadata.update(0, (err) => {
           if(err) reject(err)
           else resolve()
         })

@@ -6,6 +6,7 @@ import {
   Button,
   BackHandler,
   Linking,
+  Text,
 } from 'react-native'
 
 import Welcome from './Pages/Welcome'
@@ -38,6 +39,9 @@ export default class App extends Component {
       url: 'dat://',
       data: null
     }
+
+    let i = 0
+    setInterval(() => console.log(i++), 1000)
 
     this.history = []
     this.input = null
