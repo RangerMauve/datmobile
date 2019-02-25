@@ -41,7 +41,7 @@ export default class App extends Component {
     }
 
     let i = 0
-    setInterval(() => console.log(i++), 1000)
+    // setInterval(() => console.log(i++), 1000)
 
     this.history = []
     this.input = null

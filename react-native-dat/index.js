@@ -31,7 +31,6 @@ export default class Repo extends Hyperdrive {
 
     super(db, key, finalOpts)
 
-    console.log('Waiting for ready')
     this.opts = finalOpts
 
     this.ready(() => {
@@ -54,7 +53,7 @@ export default class Repo extends Hyperdrive {
     this.websocket = websocket(url)
 
     this.websocket.once('error', (e) => {
-      console.log(e.stack)
+      console.log('Error', e.stack)
       setTimeout(() => {
         this._createWebsocket(server)
       }, DEFAULT_WEBSOCKET_RECONNECT)

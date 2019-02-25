@@ -70,8 +70,11 @@ export default class DatContentLoader {
           else resolve(null)
         })
       })
+
+      // await delay(1000)
+
       await new Promise((resolve, reject) => {
-        archive.metadata.update(0, (err) => {
+        archive.metadata.update((err) => {
           if(err) reject(err)
           else resolve()
         })
