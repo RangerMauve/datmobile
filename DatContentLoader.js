@@ -32,6 +32,14 @@ export default class DatContentLoader {
     })
   }
 
+  async getAsDataURI (url) {
+    const parsed = new DatURL(url)
+    const mimeType = parsed.mimeType
+
+    const buffer = await this.getAsBinary(url)
+    return `data:${mimeType};base64,${buffer.toString('base64')}`
+  }
+
   async getAsBinary (url) {
     const parsed = new DatURL(url)
     const dat = await this.getDat(parsed.key)

@@ -54,12 +54,13 @@ export default class Repo extends Hyperdrive {
 
     this.websocket.once('error', (e) => {
       console.log('Error', e.stack)
+    })
+    
+    this.websocket.once('close', () => {
       setTimeout(() => {
         this._createWebsocket(server)
       }, DEFAULT_WEBSOCKET_RECONNECT)
     })
-
-    this.websocket.once('close', () => console.log('closed websocket', (new Error("Logging")).stack))
 
     this._replicate(this.websocket)
   }

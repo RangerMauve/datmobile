@@ -15,8 +15,9 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 	- [x] View text files in a Text element
 	- [x] Image viewing
 	- [x] Markdown support through some component
-	- [ ] HTML viewier with a webview (Won't support relative URLs or dat://protocol)
-	- [ ] Make it actually work on the device without remote debugging 😭
+	- [x] HTML viewier with a webview (Won't support relative URLs or dat://protocol)
+	- [x] Make it actually work on the device without remote debugging 😭 Thanks @mafintosh!
+- [ ] Release to playstore
 - [ ] Get discovery-swarm to work with RN in the JS thread
 	- [ ] Identify the node modules that need to run in RN
 	- [ ] Use discovery-swarm instead of gateway

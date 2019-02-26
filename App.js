@@ -15,6 +15,7 @@ import Directory from './Pages/Directory'
 import File from './Pages/File'
 import Image from './Pages/Image'
 import Markdown from './Pages/Markdown'
+import HTML from './Pages/HTML'
 
 import DatContentLoader from './DatContentLoader'
 import DatURL from './DatURL'
@@ -25,6 +26,7 @@ const PAGE_MAPPING = {
   'file': File,
   'image': Image,
   'markdown': Markdown,
+  'html': HTML,
   'loading': Loading,
 }
 
@@ -49,6 +51,7 @@ export default class App extends Component {
     this.contentLoader = new DatContentLoader(GATEWAY)
 
     this.navigateTo = async (url) => {
+      if(!url) return
       console.log(`Navigating: ${url}`)
       if(url === 'dat://') {
         this.setState({
@@ -68,12 +71,17 @@ export default class App extends Component {
           const mimeType = parsed.mimeType
 
           if(mimeType.includes('image')) {
-            const buffer = await this.contentLoader.getAsBinary(url)
-            const imageURI = `data:${mimeType};base64,${buffer.toString('base64')}`
+            const imageURI = await this.contentLoader.getAsDataURI(url)
             console.log(`Image URI: ${imageURI}`)
             this.setState({
               page: 'image',
               data: imageURI
+            })
+          } if (mimeType.includes('html')) {
+            const html = await this.contentLoader.getAsText(url)
+            this.setState({
+              page: 'html',
+              data: html
             })
           } else {
             const text = await this.contentLoader.getAsText(url)

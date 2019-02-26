@@ -43,6 +43,7 @@
     "react-native-randombytes": "^3.5.2",
     "react-native-tcp": "^3.2.1",
     "react-native-udp": "^2.1.0",
+    "react-native-webview": "^5.2.1",
     "readable-stream": "^1.0.33",
     "signalhubws": "^1.0.10",
     "stream-browserify": "^1.0.0",

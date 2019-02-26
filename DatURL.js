@@ -27,7 +27,7 @@ export default class DatURL {
     if (stringURL.startsWith(DAT_PROTOCOL)) {
       return new DatURL(url)
     } else {
-      const newPath = pathAPI.resolve(this.path, url)
+      const newPath = pathAPI.resolve(this.path, stringURL)
       return new DatURL(`${DAT_PROTOCOL}${this.key}${newPath}`)
     }
   }
