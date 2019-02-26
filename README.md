@@ -34,6 +34,13 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 - [ ] Extras!
 	- [ ] experimental.datPeers API
 	- [ ] Add Blocklist for trackers and ads
+- [ ] Perormance improvements
+	- [ ] Close repos when they're not in use
+	- [ ] Don't upload to discovery-swarm while on battery
+	- [ ] Download bookmarked site updates when charging and not on metered wifi
+	- [ ] Keep an LRU of archies to seed in the background
+	- [ ] Prioritize local network over internet
+	- [ ] [DNS caching](https://github.com/datprotocol/DEPs/pull/59)
 
 ## Contributing:
 
@@ -46,3 +53,7 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 - `npm install`
 - `npm run nodeify`
 - `react-native run-android`
+
+## Privacy:
+
+Datmobile does not collect or save any of your personal data, or share it with third parties.

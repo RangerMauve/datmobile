@@ -24,7 +24,7 @@ export default class DatURL {
 
   relative (url) {
     const stringURL = url.toString()
-    if (stringURL.startsWith(DAT_PROTOCOL)) {
+    if (stringURL.indexOf(DAT_PROTOCOL) === 0) {
       return new DatURL(url)
     } else {
       const newPath = pathAPI.resolve(this.path, stringURL)

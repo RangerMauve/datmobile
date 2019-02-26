@@ -31,6 +31,7 @@ const PAGE_MAPPING = {
 }
 
 const GATEWAY = 'wss://gateway.mauve.moe'
+const DAT_PROTOCOL = 'dat://'
 
 export default class App extends Component {
   constructor (props) {
@@ -52,39 +53,40 @@ export default class App extends Component {
 
     this.navigateTo = async (url) => {
       if(!url) return
+      stringURL = url.toString()
       console.log(`Navigating: ${url}`)
-      if(url === 'dat://') {
+      if (stringURL === DAT_PROTOCOL) {
         this.setState({
           page: 'welcome',
           data: 'null',
-          url: url,
+          url: stringURL,
         })
-      } else if (url.startsWith('dat://')) {
+      } else if (stringURL.indexOf(DAT_PROTOCOL) === 0) {
         this.history.push(this.state.url)
         this.setState({
-          url: url,
+          url: stringURL,
           page: 'loading'
         })
-        const isFile = await this.contentLoader.isFile(url)
+        const isFile = await this.contentLoader.isFile(stringURL)
         if (isFile) {
-          const parsed = new DatURL(url)
+          const parsed = new DatURL(stringURL)
           const mimeType = parsed.mimeType
 
           if(mimeType.includes('image')) {
-            const imageURI = await this.contentLoader.getAsDataURI(url)
+            const imageURI = await this.contentLoader.getAsDataURI(stringURL)
             console.log(`Image URI: ${imageURI}`)
             this.setState({
               page: 'image',
               data: imageURI
             })
           } if (mimeType.includes('html')) {
-            const html = await this.contentLoader.getAsText(url)
+            const html = await this.contentLoader.getAsText(stringURL)
             this.setState({
               page: 'html',
               data: html
             })
           } else {
-            const text = await this.contentLoader.getAsText(url)
+            const text = await this.contentLoader.getAsText(stringURL)
             if(mimeType.includes('markdown')) {
               this.setState({
                 page: 'markdown',
@@ -98,14 +100,14 @@ export default class App extends Component {
             }
           }
         } else {
-          const files = await this.contentLoader.getFolderContents(url)
+          const files = await this.contentLoader.getFolderContents(stringURL)
           this.setState({
             page: 'directory',
             data: files
           })
         }
       } else {
-        this.navigateTo(new DatURL(this.state.url).relative(url).toString())
+        this.navigateTo(new DatURL(this.state.url).relative(stringURL).toString())
       }
     }
 
