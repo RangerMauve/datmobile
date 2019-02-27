@@ -1,3 +1,5 @@
+![Datmobile logo](assets/logo.png)
+
 # datmobile
 
 A mobile app for viewing Dat Archives. Drive all around the P2P web with your phone. Pronounced like the famous hero's car.
@@ -45,7 +47,7 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 ## Contributing:
 
 - Changes are very much welcome!
-- Please open an issue if you have an idea for a change before doing a PR.
+- Please open an issue if you have an idea for a big change before doing a PR.
 - Please use the ["standard"](https://standardjs.com/) code style.
 
 ## Building
