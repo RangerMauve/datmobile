@@ -1,6 +1,6 @@
 ![Datmobile logo](assets/logo.png)
 
-# datmobile
+# Datmobile [(download)](https://play.google.com/store/apps/details?id=com.datmobile)
 
 A mobile app for viewing Dat Archives. Drive all around the P2P web with your phone. Pronounced like the famous hero's car.
 
