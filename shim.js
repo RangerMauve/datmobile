@@ -45,3 +45,22 @@ if (!Math.clz32) Math.clz32 = function(x) {
   }
    return 31 - (Math.log(x >>> 0) / Math.LN2 | 0); // the "| 0" acts like math.floor
 };
+
+const Response = require('@tradle/react-native-http/lib/response')
+
+if (!Response.prototype.setEncoding) {
+  Response.prototype.setEncoding = function (encoding) {
+    this.__encoding = encoding
+  }
+
+  Response.prototype._emitData = function (res) {
+    var respBody = this.getResponse(res)
+    if (respBody.length > this.offset) {
+      var rawData = respBody.slice(this.offset)
+      var data = this.__encoding === 'utf-8' ? rawData : new Buffer(rawData)
+
+      this.emit('data', data);
+      this.offset = respBody.length;
+    }
+  };
+}

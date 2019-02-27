@@ -4,15 +4,27 @@ import websocket from 'websocket-stream'
 import encoding from 'dat-encoding'
 import crypto from 'hypercore-crypto'
 import pump from 'pump'
+import datDNSAPI from 'dat-dns'
+
+const DEFAULT_DNS_HOST = 'dns.dns-over-https.com'
+const DEFAULT_DNS_PATH = '/dns-query'
+
+const datDNS = datDNSAPI({
+  dnsHost: DEFAULT_DNS_HOST,
+  dnsPath: DEFAULT_DNS_PATH
+})
 
 const DEFAULT_WEBSOCKET_RECONNECT = 1000
-const DAT_PROTOCOL = 'dat://'
 
 const DEFAULT_OPTIONS = {
   sparse: true
 }
 
 export default class Repo extends Hyperdrive {
+  static async resolveDNS(url) {
+    return datDNS.resolveName(url)
+  }
+
   constructor (url, opts = {}) {
     const finalOpts = Object.assign({}, DEFAULT_OPTIONS, opts)
     let key = null

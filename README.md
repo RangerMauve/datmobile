@@ -21,6 +21,7 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 	- [x] Make it actually work on the device without remote debugging 😭 Thanks @mafintosh!
 - [ ] Release to playstore
 - [ ] Get discovery-swarm to work with RN in the JS thread
+	- [ ] dat-dns
 	- [ ] Identify the node modules that need to run in RN
 	- [ ] Use discovery-swarm instead of gateway
 - [ ] Support dat protocol as a browser
