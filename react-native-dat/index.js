@@ -4,17 +4,21 @@ import websocket from 'websocket-stream'
 import encoding from 'dat-encoding'
 import crypto from 'hypercore-crypto'
 import pump from 'pump'
+import datDNSAPI from 'dat-dns'
 import DiscoverySwarm from 'discovery-swarm'
 import SWARM_DEFAULTS from 'dat-swarm-defaults'
 
 const DEFAULT_WEBSOCKET_RECONNECT = 1000
-const DAT_PROTOCOL = 'dat://'
 
 const DEFAULT_OPTIONS = {
   sparse: true
 }
 
 export default class Repo extends Hyperdrive {
+  static async resolveDNS(url) {
+    return datDNS.resolveName(url)
+  }
+
   constructor (url, opts = {}) {
     const finalOpts = Object.assign({}, DEFAULT_OPTIONS, opts)
     let key = null
@@ -56,12 +60,13 @@ export default class Repo extends Hyperdrive {
 
     this.websocket.once('error', (e) => {
       console.log('Error', e.stack)
+    })
+
+    this.websocket.once('close', () => {
       setTimeout(() => {
         this._createWebsocket(server)
       }, DEFAULT_WEBSOCKET_RECONNECT)
     })
-
-    this.websocket.once('close', () => console.log('closed websocket', (new Error("Logging")).stack))
 
     this._replicate(this.websocket)
   }

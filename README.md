@@ -1,4 +1,6 @@
-# datmobile
+![Datmobile logo](assets/logo.png)
+
+# Datmobile [(download)](https://play.google.com/store/apps/details?id=com.datmobile)
 
 A mobile app for viewing Dat Archives. Drive all around the P2P web with your phone. Pronounced like the famous hero's car.
 
@@ -15,9 +17,11 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 	- [x] View text files in a Text element
 	- [x] Image viewing
 	- [x] Markdown support through some component
-	- [ ] HTML viewier with a webview (Won't support relative URLs or dat://protocol)
-	- [ ] Make it actually work on the device without remote debugging 😭
+	- [x] HTML viewier with a webview (Won't support relative URLs or dat://protocol)
+	- [x] Make it actually work on the device without remote debugging 😭 Thanks @mafintosh!
+- [ ] Release to playstore
 - [ ] Get discovery-swarm to work with RN in the JS thread
+	- [ ] dat-dns
 	- [ ] Identify the node modules that need to run in RN
 	- [ ] Use discovery-swarm instead of gateway
 - [ ] Support dat protocol as a browser
@@ -33,11 +37,18 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 - [ ] Extras!
 	- [ ] experimental.datPeers API
 	- [ ] Add Blocklist for trackers and ads
+- [ ] Perormance improvements
+	- [ ] Close repos when they're not in use
+	- [ ] Don't upload to discovery-swarm while on battery
+	- [ ] Download bookmarked site updates when charging and not on metered wifi
+	- [ ] Keep an LRU of archies to seed in the background
+	- [ ] Prioritize local network over internet
+	- [ ] [DNS caching](https://github.com/datprotocol/DEPs/pull/59)
 
 ## Contributing:
 
 - Changes are very much welcome!
-- Please open an issue if you have an idea for a change before doing a PR.
+- Please open an issue if you have an idea for a big change before doing a PR.
 - Please use the ["standard"](https://standardjs.com/) code style.
 
 ## Building
@@ -45,3 +56,7 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 - `npm install`
 - `npm run nodeify`
 - `react-native run-android`
+
+## Privacy:
+
+Datmobile does not collect or save any of your personal data, or share it with third parties.

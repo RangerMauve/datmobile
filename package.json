@@ -1,12 +1,13 @@
 {
   "name": "datmobile",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
     "nodeify": "rn-nodeify --install --hack",
-    "postinstall": "npm run nodeify"
+    "postinstall": "npm run nodeify",
+    "build-android": "cd ./android && gradlew assembleRelease"
   },
   "dependencies": {
     "@tradle/react-native-http": "^2.0.0",
@@ -17,6 +18,7 @@
     "buffer": "^4.9.1",
     "console-browserify": "^1.1.0",
     "constants-browserify": "^1.0.0",
+    "dat-dns": "^3.1.0",
     "dat-encoding": "^5.0.1",
     "dat-swarm-defaults": "^1.0.2",
     "delay": "^4.1.0",
@@ -45,9 +47,11 @@
     "react-native-randombytes": "^3.5.2",
     "react-native-tcp": "^3.3.0",
     "react-native-udp": "^2.1.0",
+    "react-native-webview": "^5.2.1",
     "readable-stream": "^1.0.33",
     "signalhubws": "^1.0.10",
     "stream-browserify": "^1.0.0",
+    "stream-http": "^3.0.0",
     "string_decoder": "^0.10.31",
     "through2": "^3.0.0",
     "timers-browserify": "^1.0.1",
