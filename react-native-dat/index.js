@@ -4,6 +4,8 @@ import websocket from 'websocket-stream'
 import encoding from 'dat-encoding'
 import crypto from 'hypercore-crypto'
 import pump from 'pump'
+import DiscoverySwarm from 'discovery-swarm'
+import SWARM_DEFAULTS from 'dat-swarm-defaults'
 
 const DEFAULT_WEBSOCKET_RECONNECT = 1000
 const DAT_PROTOCOL = 'dat://'
