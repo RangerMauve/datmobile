@@ -1,9 +1,9 @@
 import React from 'react'
 import {
-  ScrollView,
+  ScrollView
 } from 'react-native'
 
-import EasyMarkdown from 'react-native-easy-markdown';
+import EasyMarkdown from 'react-native-easy-markdown'
 
 export default function Markdown (props) {
   const data = props.data

@@ -1,7 +1,7 @@
 import React from 'react'
 import {
   Button,
-  ScrollView,
+  ScrollView
 } from 'react-native'
 
 export default function Directory (props) {
@@ -24,9 +24,9 @@ export default function Directory (props) {
   return (
     <ScrollView>
       <Button
-        title="../"
+        title='../'
         onPress={() => navigateTo('../')}
-        accessibilityLabel="Navigate to parent folder"
+        accessibilityLabel='Navigate to parent folder'
       />
       {buttons}
     </ScrollView>

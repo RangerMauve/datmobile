@@ -55,6 +55,11 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 
 - `npm install`
 - `npm run nodeify`
+- `react-native link react-native-randombytes`
+- `react-native link react-native-tcp`
+- `react-native link react-native-udp`
+- `react-native link react-native-os`
+- `react-native link react-native-webview`
 - `react-native run-android`
 
 ## Privacy:

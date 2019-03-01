@@ -1,27 +1,27 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
   StyleSheet,
   Image,
   ActivityIndicator,
-  View,
+  View
 } from 'react-native'
 
 export default class ImageFile extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props)
 
     this.state = {
       layout: null
     }
 
-    this.handleLayoutSet = ({nativeEvent}) => {
-      const {layout} = nativeEvent
+    this.handleLayoutSet = ({ nativeEvent }) => {
+      const { layout } = nativeEvent
       console.log('Layout', layout)
-      this.setState({layout})
+      this.setState({ layout })
     }
   }
   render () {
-    if(!this.state.layout) {
+    if (!this.state.layout) {
       return (
         <View style={styles.container} onLayout={this.handleLayoutSet}>
           <ActivityIndicator />
@@ -36,8 +36,8 @@ export default class ImageFile extends Component {
         <Image style={{
           width: this.state.layout.width,
           height: this.state.layout.height,
-          resizeMode: 'contain',
-        }} source={{uri: data}} />
+          resizeMode: 'contain'
+        }} source={{ uri: data }} />
       </View>
     )
   }

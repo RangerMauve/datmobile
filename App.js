@@ -5,8 +5,7 @@ import {
   TextInput,
   Button,
   BackHandler,
-  Linking,
-  Text,
+  Linking
 } from 'react-native'
 
 import Welcome from './Pages/Welcome'
@@ -27,7 +26,7 @@ const PAGE_MAPPING = {
   'image': Image,
   'markdown': Markdown,
   'html': HTML,
-  'loading': Loading,
+  'loading': Loading
 }
 
 const GATEWAY = 'wss://gateway.mauve.moe'
@@ -43,23 +42,20 @@ export default class App extends Component {
       data: null
     }
 
-    let i = 0
-    // setInterval(() => console.log(i++), 1000)
-
     this.history = []
     this.input = null
 
     this.contentLoader = new DatContentLoader(GATEWAY)
 
     this.navigateTo = async (url) => {
-      if(!url) return
-      stringURL = url.toString()
+      if (!url) return
+      const stringURL = url.toString()
       console.log(`Navigating: ${url}`)
       if (stringURL === DAT_PROTOCOL) {
         this.setState({
           page: 'welcome',
           data: 'null',
-          url: stringURL,
+          url: stringURL
         })
       } else if (stringURL.indexOf(DAT_PROTOCOL) === 0) {
         this.history.push(this.state.url)
@@ -72,7 +68,7 @@ export default class App extends Component {
           const parsed = new DatURL(stringURL)
           const mimeType = parsed.mimeType
 
-          if(mimeType.includes('image')) {
+          if (mimeType.includes('image')) {
             const imageURI = await this.contentLoader.getAsDataURI(stringURL)
             console.log(`Image URI: ${imageURI}`)
             this.setState({
@@ -87,7 +83,7 @@ export default class App extends Component {
             })
           } else {
             const text = await this.contentLoader.getAsText(stringURL)
-            if(mimeType.includes('markdown')) {
+            if (mimeType.includes('markdown')) {
               this.setState({
                 page: 'markdown',
                 data: text
@@ -129,9 +125,9 @@ export default class App extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     BackHandler.addEventListener('hardwareBackPress', () => {
-      if(!this.history.length) return false
+      if (!this.history.length) return false
 
       this.goBack()
 
@@ -139,10 +135,10 @@ export default class App extends Component {
     })
 
     Linking.getInitialURL().then((url) => {
-       if (url) {
-         this.navigateTo(url)
-       }
-    }).catch(err => console.error('An error occurred', err));
+      if (url) {
+        this.navigateTo(url)
+      }
+    }).catch(err => console.error('An error occurred', err))
   }
 
   render () {
@@ -157,7 +153,7 @@ export default class App extends Component {
       <View style={styles.container}>
         <View style={styles.navigation}>
           <Button
-            title="Back"
+            title='Back'
             onPress={() => this.goBack()}
           />
           <TextInput
@@ -171,7 +167,7 @@ export default class App extends Component {
             ref={this.setInputRef}
           />
           <Button
-            title="Go"
+            title='Go'
             onPress={() => this.navigateToCurrentURL()}
           />
         </View>

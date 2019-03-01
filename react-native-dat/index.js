@@ -1,96 +1,192 @@
 import Hyperdrive from 'hyperdrive'
 import ram from 'random-access-memory'
-import websocket from 'websocket-stream'
-import encoding from 'dat-encoding'
 import crypto from 'hypercore-crypto'
-import pump from 'pump'
-import datDNSAPI from 'dat-dns'
+import DatDNSAPI from 'dat-dns'
 import DiscoverySwarm from 'discovery-swarm'
-import SWARM_DEFAULTS from 'dat-swarm-defaults'
+import HypercoreProtocol from 'hypercore-protocol'
+import DatEncoding from 'dat-encoding'
+import { EventEmitter } from 'events'
+import krpc from 'k-rpc'
+import sha1 from 'simple-sha1'
 
-const DEFAULT_WEBSOCKET_RECONNECT = 1000
+import SWARM_DEFAULTS from 'dat-swarm-defaults'
 
 const DEFAULT_OPTIONS = {
   sparse: true
 }
 
-export default class Repo extends Hyperdrive {
-  static async resolveDNS(url) {
-    return datDNS.resolveName(url)
+const DEFAULT_DNS_HOST = 'dns.dns-over-https.com'
+const DEFAULT_DNS_PATH = '/dns-query'
+
+const DEFAULT_DNS_OPTS = {
+  dnsHost: DEFAULT_DNS_HOST,
+  dnsPath: DEFAULT_DNS_PATH
+}
+
+const DAT_SWARM_PORT = 3282
+
+/**
+ * The Dat object. Manages multiple repositories in
+ * a single discovery-swarm instance.
+ * @param {Object} opts   Default options to use for the dat.
+ */
+export default class Dat extends EventEmitter {
+  async resolveName (url) {
+    return this.dns.resolveName(url)
   }
 
-  constructor (url, opts = {}) {
-    const finalOpts = Object.assign({}, DEFAULT_OPTIONS, opts)
-    let key = null
-    if (url) {
-      key = encoding.decode(url)
-    } else {
+  constructor (opts) {
+    super()
+    this.opts = Object.assign({}, DEFAULT_OPTIONS, opts || {})
+
+    if (!this.opts.id) this.opts.id = crypto.randomBytes(32)
+
+    this.archives = []
+
+    this.dns = DatDNSAPI(Object.assign({}, DEFAULT_DNS_OPTS, this.opts))
+
+    const swarmOpts = SWARM_DEFAULTS({
+      hash: false,
+      stream: (info) => this._createReplicationStream(info)
+    })
+
+    swarmOpts.dht.krpc = krpc({
+      isIP: () => true,
+      idLength: Buffer.from(sha1.sync(Buffer.from('')), 'hex').length
+    })
+
+    this.swarm = new DiscoverySwarm(swarmOpts)
+
+    this._opening = new Promise((resolve, reject) => {
+      this.swarm.listen(DAT_SWARM_PORT, (err) => {
+        if(err) return reject(err)
+        this._opening = null
+        resolve()
+      })
+    })
+  }
+
+  // Based on beaker-core https://github.com/beakerbrowser/beaker-core/blob/54726a042dc0f72773a9e147c87f8072a9d7a39a/dat/daemon/index.js#L531
+  _createReplicationStream (info) {
+    console.log('Got peer', info)
+    const stream = new HypercoreProtocol({
+      id: this.opts.id,
+      live: true,
+      encrypt: true
+    })
+
+    stream.peerInfo = info
+
+    if (info.channel) this._replicateWith(stream, info.channel)
+
+    return stream
+  }
+
+  _replicateWith (stream, discoveryKey) {
+    const discoveryKeyString = DatEncoding.encode(discoveryKey)
+    const archive = this.archives.find((archive) => DatEncoding.encode(archive.discoveryKey) === discoveryKeyString)
+
+    // Unknown archive
+    if (!archive) return
+
+    archive.replicate({ stream, live: true })
+  }
+
+  /**
+   * Returns a repo with the given url. Returns undefined
+   * if no repository is found with that url.
+   * @param  {url} url      The url of the repo.
+   * @return {Promise<Repo>}  The repo object with the corresponding url.
+   */
+  async get (url) {
+    const key = await this.resolveName(url)
+    const stringkey = DatEncoding.encode(key)
+
+    const archive = this.archives.find((archive) => DatEncoding.encode(archive.key) === stringkey)
+    if (archive) return archive
+    return this._add(key)
+  }
+
+  async _add (key, opts) {
+    if (this.destroyed) throw new Error('client is destroyed')
+
+    await this._opening
+
+    if (!opts) opts = {}
+
+    const finalOpts = Object.assign({}, this.opts, opts)
+
+    if (!key) {
       const keyPair = crypto.keyPair()
       key = keyPair.publicKey
-      opts.secretKey = keyPair.secretKey
+      finalOpts.secretKey = keyPair.secretKey
     }
+
+    const stringkey = DatEncoding.encode(key)
 
     const db = (file) => {
       const db = finalOpts.db || ram
-      return db(key.toString('hex') + '/' + file)
+      return db(stringkey + '/' + file)
     }
 
-    super(db, key, finalOpts)
+    const archive = new Hyperdrive(db, key, finalOpts)
 
-    this.opts = finalOpts
+    this.archives.push(archive)
 
-    this.ready(() => {
-      this._createWebsocket()
+    return new Promise((resolve, reject) => {
+      archive.ready(() => {
+        archive.metadata.update((err) => {
+          if(err) reject(err)
+          else resolve(archive)
+          this.emit('repo', archive)
+        })
+
+        this.swarm.join(archive.discoveryKey, {
+          announce: true
+        })
+      })
     })
   }
 
-  _createWebsocket () {
-    if (!this.opts.gateway) return
-    const servers = [].concat(this.opts.gateway)
-
-    if (!servers.length) return
-
-    const server = chooseRandom(servers)
-
-    const url = server + '/' + this.key.toString('hex')
-
-    console.log('Connecting to:', url)
-
-    this.websocket = websocket(url)
-
-    this.websocket.once('error', (e) => {
-      console.log('Error', e.stack)
-    })
-
-    this.websocket.once('close', () => {
-      setTimeout(() => {
-        this._createWebsocket(server)
-      }, DEFAULT_WEBSOCKET_RECONNECT)
-    })
-
-    this._replicate(this.websocket)
+  async create (opts) {
+    return this._add(null, opts)
   }
 
-  _replicate (stream) {
-    pump(stream, this.replicate({
-      live: true
-    }), stream)
+  async has (url) {
+    const key = await this.resolveName(url)
+    const stringkey = DatEncoding.encode(key)
+
+    const archive = this.archives.find((archive) => DatEncoding.encode(archive.key) === stringkey)
+
+    return !!archive
   }
 
-  close (cb) {
-    if (this.websocket) {
-      this.websocket.end()
-      this.websocket = null
+  /**
+   * Closes the dat, the swarm, and all underlying repo instances.
+   */
+  async close () {
+    if (this.destroyed) {
+      return
     }
+    this.destroyed = true
 
-    super.close(cb)
+    await new Promise((resolve, reject) => {
+      this.swarm.close((err) => {
+        if (err) reject(err)
+        else resolve()
+      })
+    })
+
+    await Promise.all(this.archives.map((archive) => {
+      return new Promise(resolve => archive.close(resolve))
+    }))
+
+    this.repos = null
+
+    this.emit('close')
   }
 
-  destroy (cb) {
-    this.close(cb)
+  destroy () {
+    return this.close()
   }
-}
-
-function chooseRandom (list) {
-  return list[Math.floor(Math.random() * list.length)]
 }

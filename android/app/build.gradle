@@ -162,6 +162,9 @@ configurations.all {
 */
 
 dependencies {
+    implementation project(':react-native-os')
+    implementation project(':react-native-udp')
+    implementation project(':react-native-tcp')
     implementation project(':react-native-webview')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.android.support:appcompat-v7:${rootProject.ext.supportLibVersion}"

@@ -6,7 +6,7 @@ const DAT_PROTOCOL = 'dat://'
 
 export default class DatURL {
   constructor (url) {
-    if(url instanceof DatURL) url = url.toString()
+    if (url instanceof DatURL) url = url.toString()
     const matches = url.match(DAT_REGEX)
     if (!matches) throw new TypeError(`Invalid dat URL: ${url}`)
 

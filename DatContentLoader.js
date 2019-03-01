@@ -2,14 +2,13 @@ import Dat from './react-native-dat'
 import DatURL from './DatURL'
 
 export default class DatContentLoader {
-  constructor (gateway) {
-    this.gateway = gateway
-    this.dats = new Map()
+  constructor () {
+    this.dat = new Dat()
   }
 
   async isFile (url) {
     const parsed = new DatURL(url)
-    const dat = await this.getDat(parsed.key)
+    const dat = await this.dat.get(url)
 
     return new Promise((resolve, reject) => {
       dat.stat(parsed.path, (err, stat) => {
@@ -21,7 +20,7 @@ export default class DatContentLoader {
 
   async getAsText (url) {
     const parsed = new DatURL(url)
-    const dat = await this.getDat(parsed.key)
+    const dat = await this.dat.get(url)
 
     return new Promise((resolve, reject) => {
       dat.readFile(parsed.path, 'utf-8', (err, data) => {
@@ -41,7 +40,7 @@ export default class DatContentLoader {
 
   async getAsBinary (url) {
     const parsed = new DatURL(url)
-    const dat = await this.getDat(parsed.key)
+    const dat = await this.dat.get(url)
 
     return new Promise((resolve, reject) => {
       dat.readFile(parsed.path, (err, data) => {
@@ -53,7 +52,7 @@ export default class DatContentLoader {
 
   async getFolderContents (url) {
     const parsed = new DatURL(url)
-    const dat = await this.getDat(parsed.key)
+    const dat = await this.dat.get(url)
 
     return new Promise((resolve, reject) => {
       dat.readdir(parsed.path, (err, files) => {
@@ -63,37 +62,7 @@ export default class DatContentLoader {
     })
   }
 
-  async getDat (url) {
-    const key = await Dat.resolveDNS(url)
-
-    if (!this.dats.has(key)) {
-      const archive = new Dat(key, {
-        gateway: this.gateway
-      })
-      console.log(`Getting Archive: ${url} ${key}`)
-      this.dats.set(key, archive)
-
-      await new Promise((resolve, reject) => {
-        archive.ready((err) => {
-          if(err) reject(err)
-          else resolve(null)
-        })
-      })
-
-      await new Promise((resolve, reject) => {
-        archive.metadata.update((err) => {
-          if(err) reject(err)
-          else resolve()
-        })
-      })
-    }
-
-    return this.dats.get(key)
-  }
-
   close () {
-    for (let dat of this.dats.values()) {
-      dat.close()
-    }
+    return this.dat.close()
   }
 }

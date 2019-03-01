@@ -1,14 +1,11 @@
 import React from 'react'
 import {
-  StyleSheet,
   Text,
-  View,
-  ScrollView,
+  ScrollView
 } from 'react-native'
 
 export default function File (props) {
   const data = props.data
-  const url = props.url
 
   return (
     <ScrollView>
