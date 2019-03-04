@@ -19,11 +19,14 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 	- [x] Markdown support through some component
 	- [x] HTML viewier with a webview (Won't support relative URLs or dat://protocol)
 	- [x] Make it actually work on the device without remote debugging 😭 Thanks @mafintosh!
-- [ ] Release to playstore
-- [ ] Get discovery-swarm to work with RN in the JS thread
-	- [ ] dat-dns
-	- [ ] Identify the node modules that need to run in RN
-	- [ ] Use discovery-swarm instead of gateway
+- [x] Release to playstore
+- [x] Get discovery-swarm to work with RN in the JS thread
+	- [x] dat-dns
+	- [x] Identify the node modules that need to run in RN
+	- [x] Use discovery-swarm instead of gateway
+		- [ ] Test dns tracker functionality
+		- [ ] Test DHT (Bootstraps into the DHT, doesn't find peers)
+		- [ ] Test MDNS
 - [ ] Support dat protocol as a browser
 	- [ ] Find how to support custom protocols in Webview (Android)
 	- [ ] Create custom native WebView component which adds support for this funcionality

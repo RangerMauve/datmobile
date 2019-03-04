@@ -84,9 +84,7 @@ DNSClient.prototype.lookup = function (hostname, options, callback) {
 
   if(DNS_CACHE[hostname]) return setTimeout(() => callback(null, DNS_CACHE[hostname]), 0)
 
-  console.log('lookup', hostname, options)
   this.resolve(hostname, options, (err, addresses) => {
-    console.log('resolved', hostname, addresses, err)
     if(err) callback(err)
     else if(!addresses.length) callback(new Error(`No DNS entry found for ${hostname }`))
     else {
