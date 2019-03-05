@@ -24,11 +24,16 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 	- [x] dat-dns
 	- [x] Identify the node modules that need to run in RN
 	- [x] Use discovery-swarm instead of gateway
-		- [ ] Test dns tracker functionality
+		- [x] Test dns tracker functionality
 		- [ ] Test DHT (Bootstraps into the DHT, doesn't find peers)
 		- [ ] Test MDNS
 - [ ] Support dat protocol as a browser
 	- [ ] Find how to support custom protocols in Webview (Android)
+		- [] [shouldInterceptRequest](https://developer.android.com/reference/android/webkit/WebViewClient.html#shouldInterceptRequest(android.webkit.WebView,%20android.webkit.WebResourceRequest))
+		- [] Add a `registerStreamProtocol` API based on [electron's protocol API](https://electronjs.org/docs/api/protocol#protocolregisterstreamprotocolscheme-handler-completion)
+		- [ ] Follow guide for [customizing react-native-webview](https://github.com/react-native-community/react-native-webview/blob/master/docs/Custom-Android.md)
+		- [ ] Add JS implementation for registering protocols and responding to them
+		- [ ] Add Java code to intercept requests for regitered protocols and reach out to JS
 	- [ ] Create custom native WebView component which adds support for this funcionality
 	- [ ] Create DatWebview which adds support for `dat://` protocol
 	- [ ] Make browser UI with the new webview, replacing the viewer functionality
