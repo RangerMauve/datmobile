@@ -1,25 +1,38 @@
 package com.datmobile.webview;
 
+import android.net.Uri;
+import android.util.Base64;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.reactnativecommunity.webview.RNCWebViewManager;
-import com.reactnativecommunity.webview.ReactWebViewClient;
 
-import com.facebook.react.module.annotations.ReactModule;
-import com.facebook.react.bridge.Promise;
-
+import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+
+import javax.annotation.Nullable;
 
 @ReactModule(name = ProtocolWebViewManager.REACT_CLASS)
 public class ProtocolWebViewManager extends RNCWebViewManager {
-  /* This name must match what we're referring to in JS */
-  protected static final String REACT_CLASS = "ProtocolWebView";
+    public static final int COMMAND_RESPOND_DATA = 101;
+    public static final int COMMAND_RESPOND_FINISH = 102;
+    public static final int COMMAND_REGISTER_PROTOCOL = 103;
+    public static final int COMMAND_UNREGISTER_PROTOCOL = 104;
 
-  ReactWebViewClient mReactWebViewClient = null;
+    /* This name must match what we're referring to in JS */
+    protected static final String REACT_CLASS = "ProtocolWebView";
 
-  class ProtocolWebViewClient extends ReactWebViewClient {
+    ProtocolWebViewClient mReactWebViewClient = null;
+
     protected static class PendingRequest {
       WebResourceRequest request;
       WebView view;
@@ -32,15 +45,53 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
       }
     }
 
+    @Override
+    public @Nullable
+    Map<String, Integer> getCommandsMap() {
+        Map<String, Integer> commands = super.getCommandsMap();
+
+        commands.put("_respondData", COMMAND_RESPOND_DATA);
+        commands.put("_respondFinish", COMMAND_RESPOND_FINISH);
+        commands.put("_registerProtocol", COMMAND_REGISTER_PROTOCOL);
+        commands.put("_unregisterProtocol", COMMAND_UNREGISTER_PROTOCOL);
+
+        return commands;
+    }
+
+    @Override
+    public void receiveCommand(WebView root, int commandId, @Nullable ReadableArray args) {
+        int requestId;
+        String scheme;
+        switch (commandId) {
+            case COMMAND_RESPOND_DATA:
+                // Data should be base64 encoded
+                String base64String = args.getString(1);
+                byte[] data = Base64.decode(base64String, Base64.NO_WRAP);
+                requestId = args.getInt(0);
+                mReactWebViewClient.writeToResponse(requestId, data);
+                break;
+            case COMMAND_RESPOND_FINISH:
+                requestId = args.getInt(0);
+                mReactWebViewClient.finishResponse(requestId);
+                break;
+            case COMMAND_REGISTER_PROTOCOL:
+                scheme = args.getString(0);
+                mReactWebViewClient.registerProtocol(scheme);
+                break;
+            case COMMAND_UNREGISTER_PROTOCOL:
+                scheme = args.getString(0);
+                mReactWebViewClient.unregisterProtocol(scheme);
+                break;
+        }
+
+        super.receiveCommand(root, commandId, args);
+    }
+
+  class ProtocolWebViewClient extends RNCWebViewManager.RNCWebViewClient {
     Set<String> customSchemes = new HashSet<String>();
-    Map<int, PendingRequest> pendingRequests = new HashMap<String, PendingRequest>();
+    Map<Integer, PendingRequest> pendingRequests = new HashMap<Integer, PendingRequest>();
 
     public void registerProtocol(String scheme) {
-      if(customSchemes.contains(scheme)) {
-        throw new Exception("Already Registered");
-        return;
-      }
-
       customSchemes.add(scheme);
     }
 
@@ -50,22 +101,29 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
 
     public void writeToResponse(int requestId, byte[] responseData) {
       PendingRequest pending = pendingRequests.get(requestId);
-      if(pending === null) {
+      if(pending == null) {
         return;
+      };
+
+      try {
+          pending.stream.write(responseData);
+      } catch (IOException e) {
+          // Not sure what to do
       }
 
-      PipedOutputStream stream = mResponseMap.get(requestId);
-      
-      pending.stream.write(responseData);
     }
 
     public void finishResponse(int requestId) {
       PendingRequest pending = pendingRequests.get(requestId);
-      if(pending === null) {
+      if(pending == null) {
         return;
       }
 
-      pending.stream.close();
+      try {
+        pending.stream.close();
+      } catch (IOException e) {
+          // Not sure what to do
+      }
     }
 
     @Override
@@ -74,17 +132,22 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
       String scheme = url.getScheme();
 
       if(!customSchemes.contains(scheme)) return super.shouldInterceptRequest(view, request);
-      
+
       PipedOutputStream outputStream = new PipedOutputStream();
-      PipedInputStream inputStream = new PipedInputStream(outputStream);
-      WebResourceResponse response = new WebResourceResponse('text', null, inputStream);
+      PipedInputStream inputStream;
+      try {
+        inputStream = new PipedInputStream(outputStream);
+      } catch (IOException e) {
+        return super.shouldInterceptRequest(view, request);
+      }
+      WebResourceResponse response = new WebResourceResponse("text", null, inputStream);
 
       PendingRequest pending = new PendingRequest(view, request, outputStream);
 
       int requestId = pending.hashCode();
-      pendingRequests.set(requestId, pending);
+      pendingRequests.put(requestId, pending);
 
-      dispatchEvent(view, new ProtocolHandleStartEvent(webView.getId(), requestId))
+      dispatchEvent(view, new ProtocolHandleStartEvent(view.getId(), requestId));
 
       return response;
     }

@@ -33,9 +33,18 @@ export default class ProtocolWebView {
 		}, completion)
 	}
 
+	constructor(props) {
+		super(props)
+
+		this.webview = null
+	}
+
 	render() {
 		return (
-			<WebView {...this.props} nativeConfig={{ component: ProtocolWebView }} />
+			<WebView
+				{...this.props}
+				ref={ref => this.webview = ref}
+				nativeConfig={{ component: ProtocolWebView }} />
 		);
 	}
 }

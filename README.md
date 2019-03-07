@@ -32,9 +32,17 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 		- [] [shouldInterceptRequest](https://developer.android.com/reference/android/webkit/WebViewClient.html#shouldInterceptRequest(android.webkit.WebView,%20android.webkit.WebResourceRequest))
 		- [] Add a `registerStreamProtocol` API based on [electron's protocol API](https://electronjs.org/docs/api/protocol#protocolregisterstreamprotocolscheme-handler-completion)
 		- [ ] Follow guide for [customizing react-native-webview](https://github.com/react-native-community/react-native-webview/blob/master/docs/Custom-Android.md)
-		- [ ] Add JS implementation for registering protocols and responding to them
-		- [ ] Add Java code to intercept requests for regitered protocols and reach out to JS
-	- [ ] Create custom native WebView component which adds support for this funcionality
+		- [ ] Create Java ReactNativeProtocolViewManager
+			- [x] Custom WebViewClient to intercept requests
+			- [x] Extend RNCWebView commandMap with commands for sending responses
+			- [x] Generate events for intercepting requests
+			- [ ] Add props for protocol scheme list
+		- [ ] Create ProtocolWebView JS API
+			- [ ] static `registerProtocol` and `unregisterProtocol`
+			- [ ] pass list of protocols to native props
+			- [ ] add an event listener for intercepted requests to use the protocol handlers
+		- Test it out with a dummy protocol
+	- [ ] Create custom native WebView component which adds support for this functionality
 	- [ ] Create DatWebview which adds support for `dat://` protocol
 	- [ ] Make browser UI with the new webview, replacing the viewer functionality
 	- [ ] Support version portion of `dat://` URL

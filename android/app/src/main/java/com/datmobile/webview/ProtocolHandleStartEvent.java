@@ -1,7 +1,13 @@
 package com.datmobile.webview;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.events.Event;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.reactnativecommunity.webview.events.TopMessageEvent;
+
 // NavigationCompletedEvent.java
-public class ProtocolHandleStartEvent extends Event<NavigationCompletedEvent> {
+public class ProtocolHandleStartEvent extends Event<TopMessageEvent> {
   private int requestId;
 
   public ProtocolHandleStartEvent(int viewTag, int requestId) {
@@ -17,8 +23,8 @@ public class ProtocolHandleStartEvent extends Event<NavigationCompletedEvent> {
   @Override
   public void dispatch(RCTEventEmitter rctEventEmitter) {
     init(getViewTag());
-    WritableMap data = Arguments.createMap();
-    data.putString("request", this.requestId);
+    WritableMap mParams = Arguments.createMap();
+    mParams.putInt("request", this.requestId);
     rctEventEmitter.receiveEvent(getViewTag(), getEventName(), mParams);
   }
 }
