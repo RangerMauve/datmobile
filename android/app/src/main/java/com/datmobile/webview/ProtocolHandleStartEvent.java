@@ -4,9 +4,8 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.reactnativecommunity.webview.events.TopMessageEvent;
 
-public class ProtocolHandleStartEvent extends Event<TopMessageEvent> {
+public class ProtocolHandleStartEvent extends Event<ProtocolHandleStartEvent> {
   private int requestId;
   private String url;
   private String method;
@@ -20,7 +19,7 @@ public class ProtocolHandleStartEvent extends Event<TopMessageEvent> {
 
   @Override
   public String getEventName() {
-    return "protocolHandleStart";
+    return "onProtocolHandleStart";
   }
 
   @Override

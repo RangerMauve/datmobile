@@ -77,16 +77,16 @@ var dns = new DNSClient()
 const DNS_CACHE = {}
 
 DNSClient.prototype.lookup = function (hostname, options, callback) {
-  if(typeof options === 'function') {
+  if (typeof options === 'function') {
     callback = options
     options = null
   }
 
-  if(DNS_CACHE[hostname]) return setTimeout(() => callback(null, DNS_CACHE[hostname]), 0)
+  if (DNS_CACHE[hostname]) return setTimeout(() => callback(null, DNS_CACHE[hostname]), 0)
 
   this.resolve(hostname, options, (err, addresses) => {
-    if(err) callback(err)
-    else if(!addresses.length) callback(new Error(`No DNS entry found for ${hostname }`))
+    if (err) callback(err)
+    else if (!addresses.length) callback(new Error(`No DNS entry found for ${hostname}`))
     else {
       const resolved = addresses[0]
       DNS_CACHE[hostname] = resolved
@@ -97,8 +97,8 @@ DNSClient.prototype.lookup = function (hostname, options, callback) {
 
 Object.keys(DNSClient.prototype).forEach((name) => {
   const value = dns[name]
-  if(typeof value === 'function') {
-    DNS[name] = (...args) =>  dns[name](...args)
+  if (typeof value === 'function') {
+    DNS[name] = (...args) => dns[name](...args)
   } else {
     DNS[name] = dns[name]
   }
@@ -107,11 +107,18 @@ Object.keys(DNSClient.prototype).forEach((name) => {
 // Shim react-native-udp to use random ports
 const UdpSocket = require('react-native-udp/UdpSocket')
 
-_bindSocket = UdpSocket.prototype.bind
+const _bindSocket = UdpSocket.prototype.bind
 
 let PORT_COUNT = 15000
 
 UdpSocket.prototype.bind = function (port, address, callback) {
-  if(!port) port = PORT_COUNT++
+  if (!address && callback) {
+    address = callback
+    callback = null
+  }
+  if (!port) port = PORT_COUNT++
+
+  console.log('udp bind', port, address, callback)
+
   return _bindSocket.call(this, port, address, callback)
 }

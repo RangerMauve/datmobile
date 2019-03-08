@@ -15,11 +15,13 @@ import File from './Pages/File'
 import Image from './Pages/Image'
 import Markdown from './Pages/Markdown'
 import HTML from './Pages/HTML'
+import ProtocolViewTest from './Pages/ProtocolViewTest'
 
 import DatContentLoader from './DatContentLoader'
 import DatURL from './DatURL'
 
 const PAGE_MAPPING = {
+  'protocol': ProtocolViewTest,
   'welcome': Welcome,
   'directory': Directory,
   'file': File,
@@ -37,7 +39,7 @@ export default class App extends Component {
     super(props)
 
     this.state = {
-      page: 'welcome',
+      page: 'protocol',
       url: 'dat://',
       data: null
     }

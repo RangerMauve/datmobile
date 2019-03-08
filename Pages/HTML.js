@@ -6,7 +6,7 @@ import {
 
 import { WebView } from 'react-native-webview'
 
-export default function Markdown (props) {
+export default function HTML (props) {
   const data = props.data
   const url = props.url
 

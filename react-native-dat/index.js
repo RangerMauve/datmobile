@@ -59,7 +59,7 @@ export default class Dat extends EventEmitter {
 
     this._opening = new Promise((resolve, reject) => {
       this.swarm.listen(DAT_SWARM_PORT, (err) => {
-        if(err) return reject(err)
+        if (err) return reject(err)
         this._opening = null
         resolve()
       })
@@ -76,6 +76,8 @@ export default class Dat extends EventEmitter {
     })
 
     stream.peerInfo = info
+
+    stream.on('error', (e) => console.log(e))
 
     if (info.channel) this._replicateWith(stream, info.channel)
 
@@ -136,7 +138,7 @@ export default class Dat extends EventEmitter {
     return new Promise((resolve, reject) => {
       archive.ready(() => {
         archive.metadata.update((err) => {
-          if(err) reject(err)
+          if (err) reject(err)
           else resolve(archive)
           this.emit('repo', archive)
         })

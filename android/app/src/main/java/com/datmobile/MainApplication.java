@@ -11,7 +11,6 @@ import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.peel.react.TcpSocketsModule;
 import com.peel.react.rnos.RNOSModule;
-import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.tradle.react.UdpSocketsModule;
 
 import java.util.Arrays;
@@ -32,7 +31,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RNOSModule(),
             new UdpSocketsModule(),
             new TcpSocketsModule(),
-            new RNCWebViewPackage(),
+            //new RNCWebViewPackage(),
             new RandomBytesPackage(),
             new ProtocolWebViewpackage()
       );
