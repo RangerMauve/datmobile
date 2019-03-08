@@ -9,6 +9,7 @@ import android.webkit.WebView;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.facebook.react.uimanager.annotations.ReactProp;
 import com.reactnativecommunity.webview.RNCWebViewManager;
 
 import java.io.IOException;
@@ -25,8 +26,6 @@ import javax.annotation.Nullable;
 public class ProtocolWebViewManager extends RNCWebViewManager {
     public static final int COMMAND_RESPOND_DATA = 101;
     public static final int COMMAND_RESPOND_FINISH = 102;
-    public static final int COMMAND_REGISTER_PROTOCOL = 103;
-    public static final int COMMAND_UNREGISTER_PROTOCOL = 104;
 
     /* This name must match what we're referring to in JS */
     protected static final String REACT_CLASS = "ProtocolWebView";
@@ -45,6 +44,17 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
       }
     }
 
+    @ReactProp(name = "schemes")
+    public void setShemes(WebView view, @Nullable ReadableArray schemes) {
+      mReactWebViewClient.customSchemes.clear();
+
+      int size = schemes.size();
+
+      for(int i = 0; i < size; i++) {
+        mReactWebViewClient.customSchemes.add(schemes.getString(i));
+      }
+    }
+
     @Override
     public @Nullable
     Map<String, Integer> getCommandsMap() {
@@ -52,8 +62,6 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
 
         commands.put("_respondData", COMMAND_RESPOND_DATA);
         commands.put("_respondFinish", COMMAND_RESPOND_FINISH);
-        commands.put("_registerProtocol", COMMAND_REGISTER_PROTOCOL);
-        commands.put("_unregisterProtocol", COMMAND_UNREGISTER_PROTOCOL);
 
         return commands;
     }
@@ -61,7 +69,6 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
     @Override
     public void receiveCommand(WebView root, int commandId, @Nullable ReadableArray args) {
         int requestId;
-        String scheme;
         switch (commandId) {
             case COMMAND_RESPOND_DATA:
                 // Data should be base64 encoded
@@ -74,14 +81,6 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
                 requestId = args.getInt(0);
                 mReactWebViewClient.finishResponse(requestId);
                 break;
-            case COMMAND_REGISTER_PROTOCOL:
-                scheme = args.getString(0);
-                mReactWebViewClient.registerProtocol(scheme);
-                break;
-            case COMMAND_UNREGISTER_PROTOCOL:
-                scheme = args.getString(0);
-                mReactWebViewClient.unregisterProtocol(scheme);
-                break;
         }
 
         super.receiveCommand(root, commandId, args);
@@ -90,14 +89,6 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
   class ProtocolWebViewClient extends RNCWebViewManager.RNCWebViewClient {
     Set<String> customSchemes = new HashSet<String>();
     Map<Integer, PendingRequest> pendingRequests = new HashMap<Integer, PendingRequest>();
-
-    public void registerProtocol(String scheme) {
-      customSchemes.add(scheme);
-    }
-
-    public void unregisterProtocol(String scheme) {
-      customSchemes.remove(scheme);
-    }
 
     public void writeToResponse(int requestId, byte[] responseData) {
       PendingRequest pending = pendingRequests.get(requestId);
@@ -147,7 +138,7 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
       int requestId = pending.hashCode();
       pendingRequests.put(requestId, pending);
 
-      dispatchEvent(view, new ProtocolHandleStartEvent(view.getId(), requestId));
+      dispatchEvent(view, new ProtocolHandleStartEvent(view.getId(), requestId, url.toString(), request.getMethod()));
 
       return response;
     }
