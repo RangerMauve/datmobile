@@ -80,8 +80,6 @@ export class ProtocolWebView extends Component {
 		const url = event.nativeEvent.url;
 		const method = event.nativeEvent.method;
 
-		console.log('Handling protocol', url, method, requestId);
-
 		const protocolHandlers = ProtocolWebView.protocolHandlers
 
 		for(let scheme of Object.keys(protocolHandlers)) {
@@ -114,7 +112,6 @@ export class ProtocolWebView extends Component {
 	}
 
 	_respondWithData = (requestId, buffer) => {
-		console.log('Responding with', requestId, buffer)
 		this.__dispatchCommand('_respondData', [requestId, buffer.toString('base64')])
 	}
 

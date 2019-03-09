@@ -10,6 +10,8 @@ ProtocolWebView.registerStringProtocol('foobar', (request, cb) => {
   cb({
     mimeType: "text/html",
     data: `
+    <!DOCTYPE html>
+    <meta name="viewport" content="width=device-width">
     <h1>Hello World!</h1>
     <div>${request.url}</div>
     `
