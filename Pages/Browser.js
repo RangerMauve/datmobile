@@ -4,15 +4,16 @@ import {
   View
 } from 'react-native'
 
-import { ProtocolWebView } from '../react-native-protocol-webview'
+import { DatWebView } from '../react-native-dat-webview'
 
-export default function ProtocolViewTest (props) {
-  const { url } = props
+export default function Browser (props) {
+  const { url, dat } = props
   return (
     <View style={styles.webview}>
-      <ProtocolWebView
+      <DatWebView
         style={styles.webview}
         source={{ uri: url }}
+        dat={dat}
       />
     </View>
   )

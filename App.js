@@ -9,7 +9,6 @@ import {
 } from 'react-native'
 
 import RNFS from 'react-native-fs'
-import { DatWebView } from './react-native-dat-webview'
 import Dat from './react-native-dat'
 import storage from 'random-access-rn-file'
 
@@ -36,7 +35,6 @@ const PAGE_MAPPING = {
   'loading': Loading
 }
 
-const GATEWAY = 'wss://gateway.mauve.moe'
 const DAT_PROTOCOL = 'dat://'
 
 export default class App extends Component {
@@ -91,15 +89,13 @@ export default class App extends Component {
   }
 
   componentDidMount () {
-    DatWebView.initialize(this.dat);
+    BackHandler.addEventListener('hardwareBackPress', () => {
+      if (!this.history.length) return false
 
-    // BackHandler.addEventListener('hardwareBackPress', () => {
-    //   if (!this.history.length) return false
-    //
-    //   this.goBack()
-    //
-    //   return true
-    // })
+      this.goBack()
+
+      return true
+    })
 
     Linking.getInitialURL().then((url) => {
       if (url) {
@@ -139,7 +135,7 @@ export default class App extends Component {
           />
         </View>
         <View style={styles.container}>
-          <RenderComponent url={this.state.url} data={this.state.data} navigateTo={this.navigateTo} />
+          <RenderComponent url={this.state.url} navigateTo={this.navigateTo} dat={this.dat} />
         </View>
       </View>
     )

@@ -3,16 +3,17 @@ package com.datmobile;
 import android.app.Application;
 
 import com.bitgo.randombytes.RandomBytesPackage;
-import com.datmobile.webview.ProtocolWebViewpackage;
+import com.facebook.react.BuildConfig;
 import com.facebook.react.ReactApplication;
-import com.rnfs.RNFSPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.peel.react.TcpSocketsModule;
 import com.peel.react.rnos.RNOSModule;
+import com.rnfs.RNFSPackage;
 import com.tradle.react.UdpSocketsModule;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,9 +34,9 @@ public class MainApplication extends Application implements ReactApplication {
             new RNOSModule(),
             new UdpSocketsModule(),
             new TcpSocketsModule(),
-            //new RNCWebViewPackage(),
-            new RandomBytesPackage(),
-            new ProtocolWebViewpackage()
+            new RNCWebViewPackage(),
+            new RandomBytesPackage()//,
+            // new ProtocolWebViewpackage()
       );
     }
 

@@ -4,7 +4,7 @@ import {
   View
 } from 'react-native'
 
-import { ProtocolWebView } from '../react-native-protocol-webview'
+import { WebView } from 'react-native-webview'
 
 import resolveDatPath from 'resolve-dat-path'
 
@@ -28,33 +28,28 @@ function parseDatURL(url) {
   return {key, path, version}
 }
 
-function showText(message, statusCode, cb) {
-  const stream = new PassThrough()
-
-  cb({
-    mimeType: 'text/html',
-    statusCode: statusCode,
-    data: stream,
-  })
-
-  stream.push(message)
-  stream.push(null)
-}
-
-function showError(archive, request, err, cb) {
-  showText(`
+function showError({url}, err) {
+  const body = `
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width">
 <h1>Something went wrong:</h1>
 <p>
 ${err.message}
 </p>
-`, 500, cb)
+`
+  return {
+    type: 'response',
+    url,
+    body,
+    status: 500,
+  }
 }
 
-function showDirectory(archive, request, resolvedPath, cb) {
-  archive.readdir(resolvedPath, (err, items) => {
-    const listing = `
+function showDirectory(archive, {url}, resolvedPath) {
+  return new Promise((resolve, reject) => {
+    archive.readdir(resolvedPath, (err, items) => {
+      if(err) return reject(err)
+      const body = `
 <!DOCTYPE html>
 <meta charset="utf-8" />
 <title>dat://${archive.key.toString('hex')}</title>
@@ -74,83 +69,75 @@ function showDirectory(archive, request, resolvedPath, cb) {
   `).join('\n')}
 </ul>
 `
-
-    console.log('Showing', listing)
-    showText(listing, 200, cb)
+      resolve({
+        type: 'response',
+        url,
+        body,
+        status: 200
+      })
+    })
   })
 }
 
-function showFile(archive, request, resolvedPath, cb) {
+function showFile(archive, { url }, resolvedPath) {
   console.log(`loading dat://${archive.key.toString('hex')}${resolvedPath}`)
 
-  const stream = archive.createReadStream(resolvedPath)
+  return new Promise((resolve, reject) => {
+    archive.readFile(resolvedPath, 'utf-8', (err, body) => {
+      const mimeType = mime.getType(resolvedPath)
+      const headers = {
+        'content-type': mimeType
+      }
 
-  const mimeType = mime.getType(resolvedPath)
-
-  cb({
-    data: stream,
-    statusCode: 200,
-    mimeType
+      resolve({
+        url: url,
+        headers,
+        body,
+        status: 200
+      })
+    })
   })
 }
 
-class Deferred {
-  constructor() {
-    this.promise = new Promise((resolve, reject) => {
-      this.resolve = resolve
-      this.reject = reject
+function resolveDatPathPromise(archive, path) {
+  return new Promise((resolve, reject) => {
+    resolveDatPath(archive, path, (err, resolution) => {
+      if(err) reject(err)
+      else resolve(resolution)
     })
-  }
-  then (...args) {
-    return this.promise.then(...args)
-  }
+  })
 }
 
-function loadContent(dat, request, cb) {
+async function loadContent(dat, request) {
   const { url } = request
   const {key, path} = parseDatURL(url)
-  // console.log('Running stream protocol handler', request)
-  dat.get(`dat://${key}`).then((archive) => {
-    // console.log('Got archive')
-    resolveDatPath(archive, path, (err, resolution) => {
-      // console.log(`Resolved path ${resolution}`)
-      if(err) return showError(archive, request, new Error("Not found"));
+  const archive = await dat.get(`dat://${key}`)
 
-      const resolvedPath = resolution.path
-      const type = resolution.type
-      if(type === 'directory') return showDirectory(archive, request, resolvedPath, cb)
-      if(type === 'file') return showFile(archive, request, resolvedPath, cb)
+  const resolution = await resolveDatPath(archive, path)
+
+  if(err) return showError(request, new Error("Not found"));
+
+  const resolvedPath = resolution.path
+  const type = resolution.type
+  if(type === 'directory') return showDirectory(archive, request, resolvedPath)
+  if(type === 'file') return showFile(archive, request, resolvedPath)
 
       // This should never happen
-      return showError(archive, request, new Error("Not found"), cb)
-    })
-  })
+  return showError(request, new Error("Not found"))
 }
 
 export class DatWebView extends Component{
-  static currentRequest = null
-
-  static initialize = (dat) => {
-    ProtocolWebView.registerStreamProtocol('dat', (request, cb) => {
-      loadContent(dat, request, cb)
-    })
+  onUrlSchemeRequest = async (request) => {
+    return loadContent(this.props.dat, request)
   }
 
   render () {
     return (
-      <ProtocolWebView {...this.props} />
+      <WebView
+        {...this.props}
+        urlScheme='dat'
+        onUrlSchemeRequest={this.onUrlSchemeRequest}
+      />
     )
   }
 }
-
-ProtocolWebView.registerStringProtocol('foobar', (request, cb) => {
-  cb({
-    mimeType: "text/html",
-    data: `
-    <!DOCTYPE html>
-    <meta name="viewport" content="width=device-width">
-    <h1>Hello World!</h1>
-    <div>${request.url}</div>
-    `
-  })
-})
