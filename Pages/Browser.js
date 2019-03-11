@@ -6,26 +6,13 @@ import {
 
 import { ProtocolWebView } from '../react-native-protocol-webview'
 
-ProtocolWebView.registerStringProtocol('foobar', (request, cb) => {
-  cb({
-    mimeType: 'text/html',
-    data: `
-    <!DOCTYPE html>
-    <meta name="viewport" content="width=device-width">
-    <h1>Hello World!</h1>
-    <div>${request.url}</div>
-    `
-  })
-})
-
 export default function ProtocolViewTest (props) {
   const { url } = props
   return (
     <View style={styles.webview}>
       <ProtocolWebView
-        baseUrl={url}
         style={styles.webview}
-        source={{ uri: 'foobar://example.com' }}
+        source={{ uri: url }}
       />
     </View>
   )

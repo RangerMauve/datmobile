@@ -162,6 +162,7 @@ configurations.all {
 */
 
 dependencies {
+    implementation project(':react-native-fs')
     implementation project(':react-native-os')
     implementation project(':react-native-udp')
     implementation project(':react-native-tcp')

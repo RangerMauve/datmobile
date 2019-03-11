@@ -21,10 +21,12 @@ export class ProtocolWebView extends Component {
 					mimeType = stream.mimeType
 				}
 
-				webview._setResponseInfo(id, mimeType)
+				let statusCode = response.statusCode || stream.statusCode
 
-				stream.once('close', () => webview._finishResponse(id))
-				stream.once('error', () => webview._finishResponse(id))
+				webview._setResponseInfo(id, mimeType, statusCode)
+
+				stream.once('end', () => webview._finishResponse(id))
+				stream.once('error', (e) => console.log('Error loading page', id, e))
 				stream.on('data', (data) => webview._respondWithData(id, data))
 			})
 		}
@@ -44,6 +46,8 @@ export class ProtocolWebView extends Component {
 					mimeType = buffer.mimeType
 				}
 
+				let statusCode = response.statusCode || buffer.statusCode
+
 				webview._setResponseInfo(id, mimeType)
 				webview._respondWithData(id, buffer)
 				webview._finishResponse(id)
@@ -61,9 +65,12 @@ export class ProtocolWebView extends Component {
 
 				const buffer = Buffer.from(string, charset);
 
+				let statusCode = response.statusCode || stream.statusCode
+
 				cb({
 					mimeType,
 					charset,
+					statusCode,
 					data: buffer
 				})
 			})
@@ -81,6 +88,8 @@ export class ProtocolWebView extends Component {
 		const method = event.nativeEvent.method;
 
 		const protocolHandlers = ProtocolWebView.protocolHandlers
+
+		// console.log('Handling protocol', url, method, requestId)
 
 		for(let scheme of Object.keys(protocolHandlers)) {
 			if(url.indexOf(`${scheme}:`) !== 0) continue
@@ -112,14 +121,17 @@ export class ProtocolWebView extends Component {
 	}
 
 	_respondWithData = (requestId, buffer) => {
+		// console.log('Respoding with data', requestId, buffer.length)
 		this.__dispatchCommand('_respondData', [requestId, buffer.toString('base64')])
 	}
 
 	_finishResponse = (requestId) =>{
+		// console.log('Finishing response', requestId)
 		this.__dispatchCommand('_respondFinish', [requestId])
 	}
 
 	_setResponseInfo(requestId, mimeType, status) {
+		// console.log('Sending request info', requestId, mimeType, status)
 		const args = [requestId, mimeType]
 		if(status) args.push(status)
 		this.__dispatchCommand('_respondInfo', args)

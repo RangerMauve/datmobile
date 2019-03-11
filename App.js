@@ -8,6 +8,11 @@ import {
   Linking
 } from 'react-native'
 
+import RNFS from 'react-native-fs'
+import { DatWebView } from './react-native-dat-webview'
+import Dat from './react-native-dat'
+import storage from 'random-access-rn-file'
+
 import Welcome from './Pages/Welcome'
 import Loading from './Pages/Loading'
 import Directory from './Pages/Directory'
@@ -15,13 +20,13 @@ import File from './Pages/File'
 import Image from './Pages/Image'
 import Markdown from './Pages/Markdown'
 import HTML from './Pages/HTML'
-import ProtocolViewTest from './Pages/ProtocolViewTest'
+import Browser from './Pages/Browser'
 
 import DatContentLoader from './DatContentLoader'
 import DatURL from './DatURL'
 
 const PAGE_MAPPING = {
-  'protocol': ProtocolViewTest,
+  'browser': Browser,
   'welcome': Welcome,
   'directory': Directory,
   'file': File,
@@ -39,73 +44,35 @@ export default class App extends Component {
     super(props)
 
     this.state = {
-      page: 'protocol',
+      page: 'welcome',
       url: 'dat://',
       data: null
     }
 
     this.history = []
+
+    this.dat = new Dat({
+      db: (path) => {
+        const finalPath = RNFS.CachesDirectoryPath + '/' + path
+        return storage(finalPath)
+      }
+    })
+
     this.input = null
 
-    this.contentLoader = new DatContentLoader(GATEWAY)
-
-    this.navigateTo = async (url) => {
-      if (!url) return
-      const stringURL = url.toString()
-      console.log(`Navigating: ${url}`)
-      if (stringURL === DAT_PROTOCOL) {
+    this.navigateTo = (url) => {
+      this.history.push(this.state.url)
+      // Navigating
+      if((url + '') === 'dat://') {
         this.setState({
-          page: 'welcome',
-          data: 'null',
-          url: stringURL
+          url,
+          page: 'welcome'
         })
-      } else if (stringURL.indexOf(DAT_PROTOCOL) === 0) {
-        this.history.push(this.state.url)
-        this.setState({
-          url: stringURL,
-          page: 'loading'
-        })
-        const isFile = await this.contentLoader.isFile(stringURL)
-        if (isFile) {
-          const parsed = new DatURL(stringURL)
-          const mimeType = parsed.mimeType
-
-          if (mimeType.includes('image')) {
-            const imageURI = await this.contentLoader.getAsDataURI(stringURL)
-            console.log(`Image URI: ${imageURI}`)
-            this.setState({
-              page: 'image',
-              data: imageURI
-            })
-          } if (mimeType.includes('html')) {
-            const html = await this.contentLoader.getAsText(stringURL)
-            this.setState({
-              page: 'html',
-              data: html
-            })
-          } else {
-            const text = await this.contentLoader.getAsText(stringURL)
-            if (mimeType.includes('markdown')) {
-              this.setState({
-                page: 'markdown',
-                data: text
-              })
-            } else {
-              this.setState({
-                page: 'file',
-                data: text
-              })
-            }
-          }
-        } else {
-          const files = await this.contentLoader.getFolderContents(stringURL)
-          this.setState({
-            page: 'directory',
-            data: files
-          })
-        }
       } else {
-        this.navigateTo(new DatURL(this.state.url).relative(stringURL).toString())
+        this.setState({
+          url,
+          page: 'browser'
+        })
       }
     }
 
@@ -113,10 +80,6 @@ export default class App extends Component {
       const url = this.history.pop()
       this.navigateTo(url)
       this.history.pop()
-    }
-
-    this.onChangeURL = (url) => {
-      this.setState({ url })
     }
 
     this.navigateToCurrentURL = () => {
@@ -128,13 +91,15 @@ export default class App extends Component {
   }
 
   componentDidMount () {
-    BackHandler.addEventListener('hardwareBackPress', () => {
-      if (!this.history.length) return false
+    DatWebView.initialize(this.dat);
 
-      this.goBack()
-
-      return true
-    })
+    // BackHandler.addEventListener('hardwareBackPress', () => {
+    //   if (!this.history.length) return false
+    //
+    //   this.goBack()
+    //
+    //   return true
+    // })
 
     Linking.getInitialURL().then((url) => {
       if (url) {

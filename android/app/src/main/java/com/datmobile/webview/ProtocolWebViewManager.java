@@ -2,6 +2,7 @@ package com.datmobile.webview;
 
 import android.net.Uri;
 import android.util.Base64;
+import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
@@ -17,12 +18,13 @@ import com.reactnativecommunity.webview.RNCWebViewManager;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -38,7 +40,7 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
     protected static final String REACT_CLASS = "ProtocolWebView";
 
     // How long we should wait before aborting responses
-    private static final long SHOULD_INTERCEPT_REQUEST_TIMEOUT_MS = 5000;
+    private static final long SHOULD_INTERCEPT_REQUEST_TIMEOUT_MS = 60000;
 
     private static final String ERROR_RESPONSE_TIMEOUT = "Request timed out";
 
@@ -46,7 +48,63 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
 
     private final Map<Integer, BlockingQueue<WebResourceResponse>> requestQueueMap = new HashMap<>();
     Map<Integer, PendingRequest> pendingRequests = new HashMap<Integer, PendingRequest>();
+    final static ExecutorService writePool = Executors.newSingleThreadExecutor();
 
+    protected static class AsyncStreamWriter implements Runnable {
+        final PipedOutputStream stream;
+        final byte[] data;
+
+        AsyncStreamWriter(PipedOutputStream stream, byte[] data) {
+            this.stream = stream;
+            this.data = data;
+        }
+
+        int CHUNK_SIZE = 128;
+
+        @Override
+        public void run() {
+            try {
+                Log.d("ReactNativeJS", "Writing response with length " + data.length);
+                int length = data.length;
+
+                for(int i = 0; i < length; i += CHUNK_SIZE) {
+                  int toWrite = CHUNK_SIZE;
+                  int endLocation = i + toWrite;
+                  if(endLocation > length) {
+                    toWrite = endLocation - length;
+                  }
+                  stream.write(data, i, toWrite);
+                  Log.d("ReactNativeJS", "Wrote chunk");
+                  stream.flush();
+                }
+
+                // stream.write(data, 0, data.length);
+                Log.d("ReactNativeJS", "Finished writing");
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Not sure what to do
+            }
+        }
+    }
+
+    protected static class AsyncStreamCloser implements Runnable {
+        final PipedOutputStream stream;
+
+        AsyncStreamCloser(PipedOutputStream stream) {
+            this.stream = stream;
+        }
+
+        @Override
+        public void run() {
+            try {
+                stream.close();
+                Log.d("ReactNativeJS", "Finished response");
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Not sure what to do
+            }
+        }
+    }
 
     protected static class PendingRequest {
       private WebResourceResponse response;
@@ -71,6 +129,7 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
               inputStream = new PipedInputStream(stream);
           } catch (IOException e) {
              // Ruh roh
+              e.printStackTrace();
           }
           WebResourceResponse response = new WebResourceResponse(mimeType, null, inputStream);
 
@@ -81,11 +140,10 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
       }
 
       void write(byte[] data) {
-          try {
-              stream.write(data);
-          } catch (IOException e) {
-              // Not sure what to do
-          }
+          AsyncStreamWriter asyncStreamWriter = new AsyncStreamWriter(stream, data);
+          writePool.submit(asyncStreamWriter);
+          Log.d("ReactNativeJS", "Queued write");
+
       }
 
       void write(String base64String) {
@@ -95,11 +153,9 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
       }
 
       void finish() {
-          try {
-              stream.close();
-          } catch (IOException e) {
-              // Not sure what to do
-          }
+          AsyncStreamCloser asyncStreamCloser = new AsyncStreamCloser(stream);
+          writePool.submit(asyncStreamCloser);
+          Log.d("ReactNativeJS", "Queued finish");
       }
     }
 
@@ -246,6 +302,7 @@ public class ProtocolWebViewManager extends RNCWebViewManager {
 
     @Override
     protected RNCWebView createRNCWebViewInstance(ThemedReactContext reactContext) {
+        WebView.setWebContentsDebuggingEnabled(true);
         return new ProtocolWebView(reactContext);
     }
 

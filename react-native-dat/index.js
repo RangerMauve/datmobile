@@ -68,7 +68,7 @@ export default class Dat extends EventEmitter {
 
   // Based on beaker-core https://github.com/beakerbrowser/beaker-core/blob/54726a042dc0f72773a9e147c87f8072a9d7a39a/dat/daemon/index.js#L531
   _createReplicationStream (info) {
-    console.log('Got peer', info)
+    // console.log('Got peer', info)
     const stream = new HypercoreProtocol({
       id: this.opts.id,
       live: true,
@@ -131,17 +131,21 @@ export default class Dat extends EventEmitter {
       return db(stringkey + '/' + file)
     }
 
+    // console.log('Resolved key', key.toString('hex'))
+
     const archive = new Hyperdrive(db, key, finalOpts)
 
     this.archives.push(archive)
 
     return new Promise((resolve, reject) => {
       archive.ready(() => {
-        archive.metadata.update((err) => {
-          if (err) reject(err)
-          else resolve(archive)
+        // console.log('Now ready')
+        // archive.metadata.update((err) => {
+          // if (err) reject(err)
+          // else resolve(archive)
+          resolve(archive)
           this.emit('repo', archive)
-        })
+        // })
 
         this.swarm.join(archive.discoveryKey, {
           announce: true

@@ -28,22 +28,22 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 		- [ ] Test DHT (Bootstraps into the DHT, doesn't find peers)
 		- [ ] Test MDNS
 - [ ] Support dat protocol as a browser
-	- [ ] Find how to support custom protocols in Webview (Android)
+	- [x] Find how to support custom protocols in Webview (Android)
 		- [x] [shouldInterceptRequest](https://developer.android.com/reference/android/webkit/WebViewClient.html#shouldInterceptRequest(android.webkit.WebView,%20android.webkit.WebResourceRequest))
 		- [x] Add a `registerStreamProtocol` API based on [electron's protocol API](https://electronjs.org/docs/api/protocol#protocolregisterstreamprotocolscheme-handler-completion)
 		- [x] Follow guide for [customizing react-native-webview](https://github.com/react-native-community/react-native-webview/blob/master/docs/Custom-Android.md)
-		- [ ] Create Java ReactNativeProtocolViewManager
+		- [x] Create Java ReactNativeProtocolViewManager
 			- [x] Custom WebViewClient to intercept requests
 			- [x] Extend RNCWebView commandMap with commands for sending responses
 			- [x] Generate events for intercepting requests
 			- [x] Add props for protocol scheme list
-		- [ ] Create ProtocolWebView JS API
+		- [x] Create ProtocolWebView JS API
 			- [x] static `registerProtocol` and `unregisterProtocol`
 			- [x] pass list of protocols to native props
 			- [x] add an event listener for intercepted requests to use the protocol handlers
-		- Test it out with a dummy protocol
+		- [x] Test it out with a dummy protocol
 	- [ ] Create custom native WebView component which adds support for this functionality
-	- [ ] Create DatWebview which adds support for `dat://` protocol
+	- [x] Create DatWebview which adds support for `dat://` protocol
 	- [ ] Make browser UI with the new webview, replacing the viewer functionality
 	- [ ] Support version portion of `dat://` URL
 - [ ] Keep track of history and view / clear it
