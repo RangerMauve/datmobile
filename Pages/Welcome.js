@@ -17,6 +17,7 @@ const LINKS = [{
   link: 'dat://beakerbrowser.com/'
 }, {
   title: "RangerMauve's Blog",
+  // link: 'dat://rangermauve.hashbase.io/'
   link: 'dat://rangermauve.hashbase.io/posts/'
 }]
 

@@ -3,7 +3,7 @@ package com.datmobile;
 import android.app.Application;
 
 import com.bitgo.randombytes.RandomBytesPackage;
-import com.facebook.react.BuildConfig;
+import com.datmobile.BuildConfig;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
@@ -35,8 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
             new UdpSocketsModule(),
             new TcpSocketsModule(),
             new RNCWebViewPackage(),
-            new RandomBytesPackage()//,
-            // new ProtocolWebViewpackage()
+            new RandomBytesPackage()
       );
     }
 

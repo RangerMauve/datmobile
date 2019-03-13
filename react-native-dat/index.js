@@ -138,13 +138,14 @@ export default class Dat extends EventEmitter {
     this.archives.push(archive)
 
     return new Promise((resolve, reject) => {
+      console.log('Waiting for ready')
       archive.ready(() => {
-        // console.log('Now ready')
+        console.log('Ready')
         // archive.metadata.update((err) => {
-          // if (err) reject(err)
-          // else resolve(archive)
-          resolve(archive)
-          this.emit('repo', archive)
+        // if (err) reject(err)
+        // else resolve(archive)
+        resolve(archive)
+        this.emit('repo', archive)
         // })
 
         this.swarm.join(archive.discoveryKey, {

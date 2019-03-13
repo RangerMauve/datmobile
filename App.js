@@ -21,21 +21,11 @@ import Markdown from './Pages/Markdown'
 import HTML from './Pages/HTML'
 import Browser from './Pages/Browser'
 
-import DatContentLoader from './DatContentLoader'
-import DatURL from './DatURL'
-
 const PAGE_MAPPING = {
   'browser': Browser,
   'welcome': Welcome,
-  'directory': Directory,
-  'file': File,
-  'image': Image,
-  'markdown': Markdown,
-  'html': HTML,
   'loading': Loading
 }
-
-const DAT_PROTOCOL = 'dat://'
 
 export default class App extends Component {
   constructor (props) {
@@ -59,9 +49,11 @@ export default class App extends Component {
     this.input = null
 
     this.navigateTo = (url) => {
+      if (this.state.url === url) return
+      console.log('Navigating to', url)
       this.history.push(this.state.url)
       // Navigating
-      if((url + '') === 'dat://') {
+      if ((url + '') === 'dat://') {
         this.setState({
           url,
           page: 'welcome'
@@ -69,7 +61,14 @@ export default class App extends Component {
       } else {
         this.setState({
           url,
-          page: 'browser'
+          page: 'loading'
+        })
+
+        this.dat.get(url).then(() => {
+          this.setState({
+            url,
+            page: 'browser'
+          })
         })
       }
     }
@@ -135,7 +134,10 @@ export default class App extends Component {
           />
         </View>
         <View style={styles.container}>
-          <RenderComponent url={this.state.url} navigateTo={this.navigateTo} dat={this.dat} />
+          <RenderComponent
+            url={this.state.url}
+            navigateTo={this.navigateTo}
+            dat={this.dat} />
         </View>
       </View>
     )

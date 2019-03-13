@@ -7,7 +7,8 @@
     "test": "jest",
     "nodeify": "rn-nodeify --install --hack",
     "postinstall": "npm run nodeify",
-    "build-android": "cd ./android && gradlew assembleRelease"
+    "build-android": "cd ./android && gradlew assembleRelease",
+    "build-bundle-android": "mkdir android/app/src/main/assets && react-native bundle --platform android --dev true --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res"
   },
   "dependencies": {
     "@tradle/react-native-http": "^2.0.0",

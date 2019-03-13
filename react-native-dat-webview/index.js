@@ -8,13 +8,13 @@ import { WebView } from 'react-native-webview'
 
 import resolveDatPath from 'resolve-dat-path'
 
-import { PassThrough }  from 'stream'
+import { PassThrough } from 'stream'
 
 import mime from 'mime/lite'
 
 const DAT_REGEX = /dat:\/\/([^/]+)\/?(.*)?/i
 
-function parseDatURL(url) {
+function parseDatURL (url) {
   const matches = url.match(DAT_REGEX)
   if (!matches) throw new TypeError(`Invalid dat URL: ${url}`)
 
@@ -25,10 +25,11 @@ function parseDatURL(url) {
   }
   const path = matches[2] || ''
 
-  return {key, path, version}
+  return { key, path, version }
 }
 
-function showError({url}, err) {
+function showError ({ url }, err) {
+  console.log('Error loading', err)
   const body = `
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width">
@@ -42,13 +43,14 @@ ${err.message}
     url,
     body,
     status: 500,
+    headers: {}
   }
 }
 
-function showDirectory(archive, {url}, resolvedPath) {
+function showDirectory (archive, { url }, resolvedPath) {
   return new Promise((resolve, reject) => {
     archive.readdir(resolvedPath, (err, items) => {
-      if(err) return reject(err)
+      if (err) return reject(err)
       const body = `
 <!DOCTYPE html>
 <meta charset="utf-8" />
@@ -73,13 +75,14 @@ function showDirectory(archive, {url}, resolvedPath) {
         type: 'response',
         url,
         body,
-        status: 200
+        status: 200,
+        headers: {}
       })
     })
   })
 }
 
-function showFile(archive, { url }, resolvedPath) {
+function showFile (archive, { url }, resolvedPath) {
   console.log(`loading dat://${archive.key.toString('hex')}${resolvedPath}`)
 
   return new Promise((resolve, reject) => {
@@ -90,6 +93,7 @@ function showFile(archive, { url }, resolvedPath) {
       }
 
       resolve({
+        type: 'response',
         url: url,
         headers,
         body,
@@ -99,45 +103,66 @@ function showFile(archive, { url }, resolvedPath) {
   })
 }
 
-function resolveDatPathPromise(archive, path) {
+function resolveDatPathPromise (archive, path) {
   return new Promise((resolve, reject) => {
     resolveDatPath(archive, path, (err, resolution) => {
-      if(err) reject(err)
+      if (err) reject(err)
       else resolve(resolution)
     })
   })
 }
 
-async function loadContent(dat, request) {
+async function loadContent (dat, request) {
   const { url } = request
-  const {key, path} = parseDatURL(url)
-  const archive = await dat.get(`dat://${key}`)
+  const { key, path } = parseDatURL(url)
 
-  const resolution = await resolveDatPath(archive, path)
+  try {
+    const archive = await dat.get(`dat://${key}`)
 
-  if(err) return showError(request, new Error("Not found"));
+    const resolution = await resolveDatPathPromise(archive, path)
 
-  const resolvedPath = resolution.path
-  const type = resolution.type
-  if(type === 'directory') return showDirectory(archive, request, resolvedPath)
-  if(type === 'file') return showFile(archive, request, resolvedPath)
+    const resolvedPath = resolution.path
+    const type = resolution.type
+    if (type === 'directory') return showDirectory(archive, request, resolvedPath)
+    if (type === 'file') return showFile(archive, request, resolvedPath)
+  } catch (err) {
+    return showError(request, new Error('Not found'))
+  }
 
-      // This should never happen
-  return showError(request, new Error("Not found"))
+  // This should never happen
+  return showError(request, new Error('Not found'))
 }
 
-export class DatWebView extends Component{
-  onUrlSchemeRequest = async (request) => {
-    return loadContent(this.props.dat, request)
+export class DatWebView extends Component {
+  constructor (props) {
+    super(props)
+    this.onUrlSchemeRequest = async (request) => {
+      console.log('Handling request', request)
+      return loadContent(this.props.dat, request).then((response) => {
+        console.log('Finished request', request)
+        return response
+      })
+    }
   }
 
   render () {
     return (
       <WebView
         {...this.props}
-        urlScheme='dat'
+        baseInterceptUrl='dat:'
         onUrlSchemeRequest={this.onUrlSchemeRequest}
       />
     )
   }
 }
+
+const styles = StyleSheet.create({
+  loadingView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadingProgressBar: {
+    height: 20
+  }
+})

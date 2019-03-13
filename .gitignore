@@ -56,3 +56,5 @@ buck-out/
 *.jsbundle
 
 package-lock.json
+
+index.android.bundle

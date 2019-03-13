@@ -4,6 +4,12 @@
 
 A mobile app for viewing Dat Archives. Drive all around the P2P web with your phone. Pronounced like the famous hero's car.
 
+## Status:
+
+I've run into performance issues with keeping the Dat logic within the React-Native thread.
+
+Protocol interception seems to be working, but I'll be putting this on hold until I can refactor it to use nodejs-mobile.
+
 ## Plans:
 
 - [x] Set up RN project (Start with Android for now)
@@ -42,9 +48,9 @@ A mobile app for viewing Dat Archives. Drive all around the P2P web with your ph
 			- [x] pass list of protocols to native props
 			- [x] add an event listener for intercepted requests to use the protocol handlers
 		- [x] Test it out with a dummy protocol
-	- [ ] Create custom native WebView component which adds support for this functionality
+	- [x] Update fork of react-native-webview that supports intercepting URLs
 	- [x] Create DatWebview which adds support for `dat://` protocol
-	- [ ] Make browser UI with the new webview, replacing the viewer functionality
+	- [x] Make browser UI with the new webview, replacing the viewer functionality
 	- [ ] Support version portion of `dat://` URL
 - [ ] Keep track of history and view / clear it
 - [ ] DatArchive API
