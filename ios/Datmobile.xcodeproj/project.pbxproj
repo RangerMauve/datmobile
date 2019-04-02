@@ -45,6 +45,7 @@
 		F42D7E7A403B45EE995F9E62 /* libUdpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3B60CB1438745BFB94A3B78 /* libUdpSockets.a */; };
 		3FD0DFCC2B2A4B2BB297279B /* libRNOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DC7A601D9D0A41F987A2BFA2 /* libRNOS.a */; };
 		30B4FC82F9F64AB3879873A2 /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7104D30D5E9548F095E5AEBC /* libRNFS.a */; };
+		34E4CB6D9CA540A887AEEFB2 /* libRNRandomAccessRnFile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B84EEDC403E34EE2B588205B /* libRNRandomAccessRnFile.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -364,6 +365,8 @@
 		DC7A601D9D0A41F987A2BFA2 /* libRNOS.a */ = {isa = PBXFileReference; name = "libRNOS.a"; path = "libRNOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		70B95E6DB259412E84A245DF /* RNFS.xcodeproj */ = {isa = PBXFileReference; name = "RNFS.xcodeproj"; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		7104D30D5E9548F095E5AEBC /* libRNFS.a */ = {isa = PBXFileReference; name = "libRNFS.a"; path = "libRNFS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		096AD2E8C3524CA5B492DF56 /* RNRandomAccessRnFile.xcodeproj */ = {isa = PBXFileReference; name = "RNRandomAccessRnFile.xcodeproj"; path = "../node_modules/random-access-rn-file/ios/RNRandomAccessRnFile.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		B84EEDC403E34EE2B588205B /* libRNRandomAccessRnFile.a */ = {isa = PBXFileReference; name = "libRNRandomAccessRnFile.a"; path = "libRNRandomAccessRnFile.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -398,6 +401,7 @@
 				F42D7E7A403B45EE995F9E62 /* libUdpSockets.a in Frameworks */,
 				3FD0DFCC2B2A4B2BB297279B /* libRNOS.a in Frameworks */,
 				30B4FC82F9F64AB3879873A2 /* libRNFS.a in Frameworks */,
+				34E4CB6D9CA540A887AEEFB2 /* libRNRandomAccessRnFile.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -593,6 +597,7 @@
 				3BB80DFFA2D542A796D28821 /* UdpSockets.xcodeproj */,
 				17CAF67C01F3492795489675 /* RNOS.xcodeproj */,
 				70B95E6DB259412E84A245DF /* RNFS.xcodeproj */,
+				096AD2E8C3524CA5B492DF56 /* RNRandomAccessRnFile.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1226,6 +1231,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1235,6 +1241,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-os\ios",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\random-access-rn-file\ios",
 				);
 			};
 			name = Debug;
@@ -1262,6 +1269,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1271,6 +1279,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-os\ios",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\random-access-rn-file\ios",
 				);
 			};
 			name = Release;
@@ -1299,6 +1308,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-os\ios",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\random-access-rn-file\ios",
 				);
 			};
 			name = Debug;
@@ -1326,6 +1336,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-os\ios",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\random-access-rn-file\ios",
 				);
 			};
 			name = Release;
@@ -1361,6 +1372,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1370,6 +1382,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-os\ios",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\random-access-rn-file\ios",
 				);
 			};
 			name = Debug;
@@ -1405,6 +1418,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1414,6 +1428,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-os\ios",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\random-access-rn-file\ios",
 				);
 			};
 			name = Release;
@@ -1448,6 +1463,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1457,6 +1473,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-os\ios",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\random-access-rn-file\ios",
 				);
 			};
 			name = Debug;
@@ -1491,6 +1508,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1500,6 +1518,7 @@
 					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
 					"$(SRCROOT)\..\node_modules\react-native-os\ios",
 					"$(SRCROOT)\..\node_modules\react-native-fs/**",
+					"$(SRCROOT)\..\node_modules\random-access-rn-file\ios",
 				);
 			};
 			name = Release;

@@ -5,13 +5,13 @@ import android.app.Application;
 import com.bitgo.randombytes.RandomBytesPackage;
 import com.datmobile.BuildConfig;
 import com.facebook.react.ReactApplication;
+import com.reactlibrary.RNRandomAccessRnFilePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import com.peel.react.TcpSocketsModule;
 import com.peel.react.rnos.RNOSModule;
-import com.rnfs.RNFSPackage;
 import com.tradle.react.UdpSocketsModule;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 
@@ -30,7 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new RNFSPackage(),
+            new RNRandomAccessRnFilePackage(),
             new RNOSModule(),
             new UdpSocketsModule(),
             new TcpSocketsModule(),

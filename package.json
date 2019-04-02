@@ -39,7 +39,7 @@
     "punycode": "^1.2.4",
     "querystring-es3": "^0.2.1",
     "random-access-memory": "^3.1.1",
-    "random-access-rn-file": "^1.0.1",
+    "random-access-rn-file": "github:allain/random-access-rn-file-dev",
     "react": "16.6.3",
     "react-native": "^0.58.5",
     "react-native-crypto": "^2.1.0",

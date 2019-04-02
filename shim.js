@@ -104,21 +104,21 @@ Object.keys(DNSClient.prototype).forEach((name) => {
   }
 })
 
-// Shim react-native-udp to use random ports
-const UdpSocket = require('react-native-udp/UdpSocket')
-
-const _bindSocket = UdpSocket.prototype.bind
-
-let PORT_COUNT = 15000
-
-UdpSocket.prototype.bind = function (port, address, callback) {
-  if (!address && callback) {
-    address = callback
-    callback = null
-  }
-  if (!port) port = PORT_COUNT++
-
-  console.log('udp bind', port, address, callback)
-
-  return _bindSocket.call(this, port, address, callback)
-}
+// // Shim react-native-udp to use random ports
+// const UdpSocket = require('react-native-udp/UdpSocket')
+//
+// const _bindSocket = UdpSocket.prototype.bind
+//
+// let PORT_COUNT = 15000
+//
+// UdpSocket.prototype.bind = function (port, address, callback) {
+//   if (!address && callback) {
+//     address = callback
+//     callback = null
+//   }
+//   if (!port) port = PORT_COUNT++
+//
+//   console.log('udp bind', port, address, callback)
+//
+//   return _bindSocket.call(this, port, address, callback)
+// }

@@ -8,9 +8,9 @@ import {
   Linking
 } from 'react-native'
 
-import RNFS from 'react-native-fs'
 import Dat from './react-native-dat'
-import storage from 'random-access-rn-file'
+import RARF, { cachePath } from 'random-access-rn-file'
+import path from 'path'
 
 import Welcome from './Pages/Welcome'
 import Loading from './Pages/Loading'
@@ -40,9 +40,9 @@ export default class App extends Component {
     this.history = []
 
     this.dat = new Dat({
-      db: (path) => {
-        const finalPath = RNFS.CachesDirectoryPath + '/' + path
-        return storage(finalPath)
+      db: (file) => {
+        const finalPath = path.join(cachePath, file)
+        return RARF(finalPath)
       }
     })
 
